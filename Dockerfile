@@ -18,8 +18,7 @@ RUN autoreconf -fvi && \
 # Expose Twemproxy Ports
 EXPOSE 22122 22222
 
-# Declare variable
-ARG CONFIG_FILE
-
 # Start Twemproxy
-ENTRYPOINT src/nutcracker --conf-file=$CONFIG_FILE --mbuf-size=102400
+# Use default configuration file location/name.
+# Use mbufsize from ansible commandline variable.
+ENTRYPOINT src/nutcracker
