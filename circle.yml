@@ -3,6 +3,7 @@ machine:
     - docker
 
 dependencies:
+  override:
     - docker build -t keen/twemproxy:$CIRCLE_BUILD_NUM .
     - docker tag -f keen/twemproxy:$CIRCLE_BUILD_NUM keen/twemproxy:$CIRCLE_BRANCH
 
