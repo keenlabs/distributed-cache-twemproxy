@@ -18,9 +18,9 @@ RUN autoreconf -fvi && \
     make
 
 # Expose Twemproxy Ports
-EXPOSE [22122 22222]
+EXPOSE [ 22122 22222 ]
 
 # Start Twemproxy
 # Use default configuration file location/name.
 # Use mbufsize from ansible commandline variable.
-ENTRYPOINT ["src/nutcracker"]
+ENTRYPOINT [ "src/nutcracker" ]
