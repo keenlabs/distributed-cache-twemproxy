@@ -2,18 +2,21 @@ machine:
   services:
     - docker
 
+dependencies:
+    - docker build -t keen/twemproxy:$CIRCLE_BUILD_NUM .
+    - docker tag -f keen/twemproxy:$CIRCLE_BUILD_NUM keen/twemproxy:$CIRCLE_BRANCH
+
+# We are using a dummy test for now simply to get Circle CI to not
+# give us a big warning stating "No Tests". The functionality of
+# Twemproxy is tested upstream. We may eventually wish to test
+# that the service is running correctly in the container.
 test:
   override:
     - echo 0
-
-database:
-  override:
-    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
 
 deployment:
   package:
     branch: /.*/
     commands:
-      - docker build -t keen/twemproxy:$CIRCLE_BUILD_NUM .
-      - docker tag -f keen/twemproxy:$CIRCLE_BUILD_NUM keen/twemproxy:$CIRCLE_BRANCH
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push keen/twemproxy
