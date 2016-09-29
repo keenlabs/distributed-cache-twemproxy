@@ -2,9 +2,11 @@ FROM ubuntu:16.04
 MAINTAINER Devin Ekins <devops@keen.io>
 
 # Setup the dependencies
-RUN apt-get update -y
-RUN apt-get install -y apt-utils
-RUN apt-get install -y libtool make automake
+RUN apt-get update && apt-get install -y \
+    apt-utils \
+    automake \
+    libtool \
+    make
 
 # Copy local repo into the container
 ADD . /twemproxy
@@ -16,9 +18,9 @@ RUN autoreconf -fvi && \
     make
 
 # Expose Twemproxy Ports
-EXPOSE 22122 22222
+EXPOSE [22122 22222]
 
 # Start Twemproxy
 # Use default configuration file location/name.
 # Use mbufsize from ansible commandline variable.
-ENTRYPOINT src/nutcracker
+ENTRYPOINT ["src/nutcracker"]
