@@ -18,7 +18,7 @@ RUN autoreconf -fvi && \
     make
 
 # Expose Twemproxy Ports
-EXPOSE [ 22122 22222 ]
+EXPOSE 22122 22222
 
 # Start Twemproxy
 # Use default configuration file location/name.
