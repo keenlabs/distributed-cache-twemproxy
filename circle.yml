@@ -12,7 +12,7 @@ test:
     # Temporarily disabled. Will debug on staging host. 
     # - docker run -d -p 22222:22222 keen/twemproxy:$CIRCLE_BUILD_NUM; sleep 10
     # - curl -s -o /dev/null -w "%{http_code}" http://localhost:22222
-    return 0
+    - return 0
 
 deployment:
   package:
