@@ -4,19 +4,21 @@ machine:
 
 dependencies:
   override:
-    - docker build -t keen/twemproxy:$CIRCLE_BUILD_NUM .
-    - docker tag -f keen/twemproxy:$CIRCLE_BUILD_NUM keen/twemproxy:$CIRCLE_BRANCH
+    - docker build -t keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM .
+    - docker tag -f keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM keen/distributed-cache-twemproxy:$CIRCLE_BRANCH
 
 test:
   override:
     # Temporarily disabled. Will debug on staging host. 
-    # - docker run -d -p 22222:22222 keen/twemproxy:$CIRCLE_BUILD_NUM; sleep 10
+    - docker run -d -p 22222:22222 keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:22222
     # - curl -s -o /dev/null -w "%{http_code}" http://localhost:22222
-    - echo 0
+    # - echo 0
+
 
 deployment:
   package:
     branch: /.*/
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push keen/twemproxy
+      - docker push keen/distributed-cache-twemproxy
