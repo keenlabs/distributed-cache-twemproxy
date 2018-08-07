@@ -3,16 +3,9 @@ version: 2
 jobs:
   build:
     working_directory: ~/distributed-cache-twemproxy
-    docker:
-        - image: keen/distributed-cache-twemproxy
+    machine: true
     steps:
       - checkout
-      - setup_remote_docker
-      - run:
-          name: Test
-          command: |
-                docker run -d -p 22222:22222 keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM; sleep 10
-                curl --retry 10 --retry-delay 5 -v http://localhost:22222; if [ $? != 0 ] ; then sudo apt-get install traceroute ; HOSTNAME=localhost; ping -c 10 $HOSTNAME > $CIRCLE_ARTIFACTS/network-report.log ; traceroute $HOSTNAME >> $CIRCLE_ARTIFACTS/network-report.log ; fi
       - run:
           name: Docker login
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -21,6 +14,11 @@ jobs:
           command: |
                 docker build -t keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM .
                 docker tag keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM keen/distributed-cache-twemproxy:$CIRCLE_BRANCH
+      - run:
+          name: Test
+          command: |
+                docker run -d -p 22222:22222 keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM; sleep 10
+                curl --retry 10 --retry-delay 5 -v http://localhost:22222; if [ $? != 0 ] ; then apt-get install traceroute ; HOSTNAME=localhost; ping -c 10 $HOSTNAME > $CIRCLE_ARTIFACTS/network-report.log ; traceroute $HOSTNAME >> $CIRCLE_ARTIFACTS/network-report.log ; fi
       - run:
           name: Docker push container
           command: docker push keen/distributed-cache-twemproxy
