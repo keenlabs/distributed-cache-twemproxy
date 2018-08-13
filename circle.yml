@@ -1,0 +1,23 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker build -t keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM .
+    - docker tag -f keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM keen/distributed-cache-twemproxy:$CIRCLE_BRANCH
+
+test:
+  override:
+    - docker run -d -p 22222:22222 keen/distributed-cache-twemproxy:$CIRCLE_BUILD_NUM; sleep 10
+    # We force logging here to ensure the test passes. Twemproxy does not supply a HTTP response header
+    # with the JSON response from :22222 which causes curl to fail. Logging can be accessed via the
+    # artifacts tab in case we ever need to troubleshoot.
+    - curl --retry 10 --retry-delay 5 -v http://localhost:22222; if [ $? != 0 ] ; then sudo apt-get install traceroute ; HOSTNAME=localhost; ping -c 10 $HOSTNAME > $CIRCLE_ARTIFACTS/network-report.log ; traceroute $HOSTNAME >> $CIRCLE_ARTIFACTS/network-report.log ; fi
+
+deployment:
+  package:
+    branch: /.*/
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push keen/distributed-cache-twemproxy
